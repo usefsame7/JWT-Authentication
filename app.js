@@ -5,19 +5,28 @@ const express = require('express')
        const passport = require('passport')
          const mongoose = require('mongoose')
            const bcrypt = require('bcrypt')
+             const LocalStrategy = require("passport-local").Strategy;
 
-           // connect to our server
-        app.listen(9000, () => {
-             console.log('server is running on port 9000 ...');
+
+           // Middlewares
+        app.use(express.urlencoded({ extended: true }))
+        app.use(express.json())
+        app.use(passport.initialize());
+
+        
+
+         
+           // connect to server
+            app.listen(7000, () => {
+               console.log('server is running on port 7000 ...');
             });
+              
+           // connect ot database
+            mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true ,useUnifiedTopology: true })
+            .then(() => console.log("Database connected ..."))
+            .catch(err => console.log( err.message ));
 
-           // connect ot our database
-        mongoose.connect('', // your database connection string 
-          { useNewUrlParser: true, useUnifiedTopology: true}, () => {
-                 console.log("Database Connected ...");
-            });
-
-           // create user model called( 'User' ) for Registration process
+           // create a user model for Registration process
            const userSchema = new mongoose.Schema({
             username: { type: String, required: true },
               password: { type: String, required: true },  
@@ -25,18 +34,35 @@ const express = require('express')
            
                  const User = mongoose.model("User", userSchema);
            
-                // create a new user (Register)   
+            
+                  // Home Page
+            app.get('/', (req, res) => {
+                res.send('Welcome !!');
+            });     
+
+
+
+                 // create a new user (Registration)   
             app.post('/api/register', async (req, res) => {
              const hashedPass = await bcrypt.hash(req.body.password, 10);
-              const newUser = new User({ username: req.body.username, password: hashedPass });
-               newUser.save().then(result => {
-                 res.json(result)
-                   }).catch(error => {
-                     res.json({ msg: error.message }); 
-                   });
-                 });    
+               const newUser = new User({ username: req.body.username, password: hashedPass });
+                 newUser.save().then(result => {
+                   res.json({
+                    username: result.username,
+                     password: result.password
+                      })
+                       }).catch(error => {
+                        res.json({ msg: error.message }); 
+                      });
+                   });    
 
-                // here is passport function fot authenticate user 
+
+                
+
 
                 // login by this user 
-            app.post('/api/login', ); // login middlewares     
+                app.post('/api/login', /*passport middleware*/ (req, res) => {
+
+                });
+
+              
