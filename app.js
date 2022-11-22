@@ -75,7 +75,11 @@ const app = express()
        }
      } 
             
-     
+
       app.get('/data',  authenticationMiddleware, (req, res) => {
          res.json({ msg: "Token Provided, Authorized successfully ..." });
      });     
+
+
+
+     /*   */
