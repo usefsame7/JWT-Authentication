@@ -20,6 +20,7 @@ const app = express()
       mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true ,useUnifiedTopology: true })
       .then(() => console.log("Database connected ..."))
       .catch(err => console.log( err.message ));
+
      // create a user model for Registration process
      const userSchema = new mongoose.Schema({
       username: { type: String, required: true },
@@ -48,11 +49,11 @@ const app = express()
               const matchingPass =  bcrypt.compare(password, userData.password);
                if (!matchingPass) { res.json({ msg: "Incorrect Password" }) };
                 const { id } = userData.id;
-                const user = { id, username };
-                const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' });
+              const user = { id, username };
+            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' });
                                 
-                   res.status(200).json({ token });
-               });
+         res.status(200).json({ token });
+       );
            
             
      const authenticationMiddleware = async (req, res, next) => {
@@ -74,6 +75,7 @@ const app = express()
        }
      } 
             
+     
       app.get('/data',  authenticationMiddleware, (req, res) => {
          res.json({ msg: "Token Provided, Authorized successfully ..." });
      });     
