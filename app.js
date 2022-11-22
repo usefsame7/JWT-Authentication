@@ -1,7 +1,5 @@
   /*    */
 
-
-
 const express = require('express')
 const app = express()
   require('dotenv').config()
@@ -82,7 +80,6 @@ const app = express()
       app.get('/data',  authenticationMiddleware, (req, res) => {
          res.json({ msg: "Token Provided, Authorized successfully ..." });
      });     
-
 
 
      /*   */
