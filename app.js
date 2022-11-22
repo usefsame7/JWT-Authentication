@@ -54,7 +54,7 @@ const app = express()
             const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' });
                                 
          res.status(200).json({ token });
-       );
+      });
            
             
      const authenticationMiddleware = async (req, res, next) => {
