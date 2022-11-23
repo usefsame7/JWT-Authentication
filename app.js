@@ -25,9 +25,8 @@ const app = express()
      // create a user model for Registration process
      const userSchema = new mongoose.Schema({
       username: { type: String, required: true },
-      email: { type: String, required: true },
       password: { type: String, required: true },  
-         }, { versionKey: false });
+      }, { versionKey: false });
      
            const User = mongoose.model("User", userSchema);
      
@@ -35,13 +34,15 @@ const app = express()
 
            // create a new user (Registration)   
       app.post('/register', async (req, res) => {
-        const { username, email, password } = req.body;
-       const hashedPass = await bcrypt.hash(req.body.password, 10);
-         const newUser = new User(req.body, hashedPass);
-           newUser.save()
-           res.json(newUser)
-        });    
-          
+        const { username, password } = req.body;
+             const hashedPass = await bcrypt.hash(password, 10);
+             const newUser = new User(req.body, hashedPass);
+             newUser.save();
+             res.json(newUser);
+         })
+
+
+         
       app.post('/login', (req, res) => {
          const { username, password } = req.body;
            const userData = User.findOne({ username: username })
