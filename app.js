@@ -37,7 +37,7 @@ const app = express()
         const { username, password } = req.body;
          const hashedPass = await bcrypt.hash(password, 10);
           const newUser = new User(req.body, hashedPass);
-          // Check If Data Passed Are Used Before Or Not
+          // Check If Passed Usernam Is Used Before Or Not
              User.findOne({ username: username }).then(result => {
               if (result) {
                  res.json({ msg: "Username Used Before User Another One" });
