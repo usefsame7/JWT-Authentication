@@ -35,14 +35,20 @@ const app = express()
            // create a new user (Registration)   
       app.post('/register', async (req, res) => {
         const { username, password } = req.body;
-             const hashedPass = await bcrypt.hash(password, 10);
-             const newUser = new User(req.body, hashedPass);
-             newUser.save();
-             res.json(newUser);
-         })
+         const hashedPass = await bcrypt.hash(password, 10);
+          const newUser = new User(req.body, hashedPass);
+          // Check If Data Passed Are Used Before Or Not
+             User.findOne({ username: username }).then(result => {
+              if (result) {
+                 res.json({ msg: "Username Used Before User Another One" });
+              }; 
+              newUser.save();
+            res.json(newUser);
+          }).catch(err => { res.json({ msg: err.message }) });
+        });
 
 
-         
+
       app.post('/login', (req, res) => {
          const { username, password } = req.body;
            const userData = User.findOne({ username: username })
@@ -59,8 +65,10 @@ const app = express()
            
             
      const authenticationMiddleware = async (req, res, next) => {
-      // you can access token after saving it in headers by the next line 
-       const authHeader = req.headers.token
+  /*
+  You Can save Token In Which Place You Want To Be Able To Access It In The Verification Step
+  */
+      const authHeader = req.headers.token
      
        if (!authHeader || !authHeader.startsWith('Bearer ')) {
            res.json({ msg: "No Token Provided" });
