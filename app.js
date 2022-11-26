@@ -53,10 +53,6 @@ const app = express()
          res.json({ msg: "Token Provided, Authorized successfully ..." });
      });     
 
-      app.get('/all-users', (req, res) => {
-        User.find({}).then(result => { console.log(result) });
-        res.json('send successfully !');
-      });
 
 
      /*   */
