@@ -3,7 +3,6 @@
 const express = require('express')
 const app = express()
   require('dotenv').config()
-     const bcrypt = require('bcrypt')
       const jwt = require('jsonwebtoken')
         
      // Middlewares
@@ -11,28 +10,20 @@ const app = express()
   app.use(express.json())
   
    
-     // connect to server
+         // connect to server
       app.listen(7000, () => {
          console.log('server is running on port 7000 ...');
       });
         
-  
-
-
-
-        
-
-  app.post('/login', async (req, res) => {
-     const { username, password } = req.body;
-       if (!username || !password) return res.json({ msg : "Missing Credentials" });
-           const id = new Date().getDate()
+     app.post('/login', (req, res) => {
+      const { username, password } = req.body;
+       if (!username || !password) return res.json({ msg: "Missing Credentials" })
+               const id = new Date().getDate()
               const user = { id, username }
-            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' })        
-         res.status(200).json({ token })
-   });    
-
-
-
+            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' })
+                                
+         res.status(200).json({ token });
+     })
 
 
             
