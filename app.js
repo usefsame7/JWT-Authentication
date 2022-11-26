@@ -3,7 +3,6 @@
 const express = require('express')
 const app = express()
   require('dotenv').config()
-   const mongoose = require('mongoose')
      const bcrypt = require('bcrypt')
       const jwt = require('jsonwebtoken')
         
@@ -17,56 +16,29 @@ const app = express()
          console.log('server is running on port 7000 ...');
       });
         
-     // connect ot database
-      mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true ,useUnifiedTopology: true })
-      .then(() => console.log("Database connected ..."))
-      .catch(err => console.log( err.message ));
-
-     // create a user model for Registration process
-     const userSchema = new mongoose.Schema({
-      username: { type: String, required: true },
-      password: { type: String, required: true },  
-      }, { versionKey: false });
-     
-           const User = mongoose.model("User", userSchema);
-     
-      
-
-           // create a new user (Registration)   
-      app.post('/register', async (req, res) => {
-        const { username, password } = req.body;
-         const hashedPass = await bcrypt.hash(password, 10);
-          const newUser = new User(req.body, hashedPass);
-          // Check If Data Passed Are Used Before Or Not
-             User.findOne({ username: username }).then(result => {
-              if (result) {
-                 res.json({ msg: "Username Used Before User Another One" });
-              }; 
-              newUser.save();
-            res.json(newUser);
-          }).catch(err => { res.json({ msg: err.message }) });
-        });
+  
 
 
 
-      app.post('/login', (req, res) => {
-         const { username, password } = req.body;
-           const userData = User.findOne({ username: username })
-            if (!userData) { res.json({ msg: 'Invalid Credentials' }) };
-          
-              const matchingPass =  bcrypt.compare(password, userData.password);
-               if (!matchingPass) { res.json({ msg: "Incorrect Password" }) };
-                const { id } = userData.id;
-              const user = { id, username };
-            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' });
-                                
-         res.status(200).json({ token });
-      });
-           
+        
+
+  app.post('/login', async (req, res) => {
+     const { username, password } = req.body;
+       if (!username || !password) return res.json({ msg : "Missing Credentials" });
+           const id = new Date().getDate()
+              const user = { id, username }
+            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '25d' })        
+         res.status(200).json({ token })
+   });    
+
+
+
+
+
             
-     const authenticationMiddleware = async (req, res, next) => {
+     const authMiddleware = async (req, res, next) => {
   /*
-  You Can save Token In Which Place You Want To Be Able To Access It In The Verification Step
+  You Can save Token In Which Place You Want ( Like Cookies Or Sessions ) To Be Able To Access It In The Verification Step
   */
       const authHeader = req.headers.token
      
@@ -76,19 +48,24 @@ const app = express()
      
        const accessToken = authHeader.split(' ')[1]
        try {
-         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-         const { id, username } = decoded
-         req.user = { id, username }
-         next()
-       } catch (error) {
-         res.json({ msg: "Sorry, You can't Access This Route" });
+          const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
+          const { id, username } = decoded
+          req.user = { id, username }
+          next()
+        } catch (error) {
+          res.json({ msg: "Sorry, You can't Access This Route" });
        }
      } 
             
 
-      app.get('/data',  authenticationMiddleware, (req, res) => {
+      app.get('/data',  authMiddleware, (req, res) => {
          res.json({ msg: "Token Provided, Authorized successfully ..." });
      });     
+
+      app.get('/all-users', (req, res) => {
+        User.find({}).then(result => { console.log(result) });
+        res.json('send successfully !');
+      });
 
 
      /*   */
