@@ -39,8 +39,8 @@ const app = express()
      
        const accessToken = authHeader.split(' ')[1]
        try {
-          const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-          const { id, username } = decoded
+          const payload = jwt.verify(accessToken, process.env.JWT_SECRET)
+          const { id, username } = payload
           req.user = { id, username }
           next()
         } catch (error) {
